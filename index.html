@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ちいかわ 漫画まとめ</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #333;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 2px solid #f0c040;
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    #status {
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    #controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #search {
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      width: 160px;
+    }
+
+    #jump-btn {
+      padding: 6px 12px;
+      background: #f0c040;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #jump-btn:hover { background: #e0b030; }
+
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .tweet-wrapper {
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .tweet-wrapper blockquote {
+      width: 100% !important;
+    }
+
+    .separator {
+      text-align: center;
+      color: #aaa;
+      font-size: 0.8rem;
+      padding: 12px 0 4px;
+      font-weight: bold;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #888;
+    }
+
+    #load-more {
+      display: block;
+      margin: 24px auto;
+      padding: 10px 32px;
+      background: #f0c040;
+      border: none;
+      border-radius: 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #load-more:hover { background: #e0b030; }
+
+    #scroll-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #f0c040;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🐾 ちいかわ 漫画まとめ</h1>
+  <div id="controls">
+    <input id="search" type="text" placeholder="番号で移動 (例: 100)">
+    <button id="jump-btn">移動</button>
+  </div>
+  <div id="status">読み込み中...</div>
+</header>
+
+<main id="timeline">
+  <div id="loading">漫画を読み込んでいます...</div>
+</main>
+
+<button id="scroll-top" title="先頭へ">↑</button>
+
+<script async src="https://platform.twitter.com/widgets.js"></script>
+<script>
+const BATCH = 20;
+let allTweets = [];
+let rendered = 0;
+let lastMonth = "";
+
+async function loadTweets() {
+  const resp = await fetch("data/tweets.json");
+  allTweets = await resp.json();
+  document.getElementById("loading").remove();
+  document.getElementById("status").textContent = `全 ${allTweets.length} 話`;
+  renderBatch();
+}
+
+function monthLabel(index) {
+  // Tweet IDs are snowflake IDs — approximate date from ID
+  // Use index as episode number instead
+  return null;
+}
+
+function renderBatch() {
+  const timeline = document.getElementById("timeline");
+  const end = Math.min(rendered + BATCH, allTweets.length);
+
+  for (let i = rendered; i < end; i++) {
+    const tweet = allTweets[i];
+    const num = i + 1;
+
+    const sep = document.createElement("div");
+    sep.className = "separator";
+    sep.textContent = `# ${num}`;
+    sep.id = `ep-${num}`;
+    timeline.appendChild(sep);
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "tweet-wrapper";
+
+    const bq = document.createElement("blockquote");
+    bq.className = "twitter-tweet";
+    bq.setAttribute("data-dnt", "true");
+    bq.setAttribute("data-theme", "light");
+    const a = document.createElement("a");
+    a.href = tweet.url;
+    bq.appendChild(a);
+    wrapper.appendChild(bq);
+    timeline.appendChild(wrapper);
+  }
+
+  rendered = end;
+
+  // Re-render new embeds
+  if (window.twttr && window.twttr.widgets) {
+    window.twttr.widgets.load(timeline);
+  }
+
+  // Show/hide load more button
+  let btn = document.getElementById("load-more");
+  if (rendered < allTweets.length) {
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = "load-more";
+      btn.textContent = `もっと読む (残り ${allTweets.length - rendered} 話)`;
+      btn.onclick = () => {
+        btn.remove();
+        renderBatch();
+      };
+    } else {
+      btn.textContent = `もっと読む (残り ${allTweets.length - rendered} 話)`;
+    }
+    timeline.appendChild(btn);
+  }
+}
+
+document.getElementById("jump-btn").onclick = () => {
+  const n = parseInt(document.getElementById("search").value);
+  if (!isNaN(n) && n >= 1 && n <= allTweets.length) {
+    // Make sure the episode is rendered
+    while (rendered < n) {
+      document.getElementById("load-more")?.remove();
+      renderBatch();
+    }
+    setTimeout(() => {
+      document.getElementById(`ep-${n}`)?.scrollIntoView({ behavior: "smooth" });
+    }, 300);
+  }
+};
+
+document.getElementById("search").addEventListener("keydown", e => {
+  if (e.key === "Enter") document.getElementById("jump-btn").click();
+});
+
+const scrollTopBtn = document.getElementById("scroll-top");
+window.addEventListener("scroll", () => {
+  scrollTopBtn.style.display = window.scrollY > 400 ? "block" : "none";
+});
+scrollTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+loadTweets();
+</script>
+</body>
+</html>
