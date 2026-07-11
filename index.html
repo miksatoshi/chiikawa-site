@@ -11,90 +11,239 @@
       background: #f5f5f5;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
     header {
       background: #fff;
       border-bottom: 2px solid #f0c040;
-      padding: 16px 24px;
+      padding: 12px 20px;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 200;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 12px;
     }
 
-    header h1 {
-      font-size: 1.2rem;
+    #menu-btn {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    #menu-btn:hover { background: #f0f0f0; }
+
+    header h1 { font-size: 1.1rem; font-weight: bold; flex: 1; }
+    #status { font-size: 0.8rem; color: #888; white-space: nowrap; }
+
+    .layout { display: flex; flex: 1; position: relative; }
+
+    /* サイドバー */
+    #sidebar {
+      width: 220px;
+      min-width: 220px;
+      background: #fff;
+      border-right: 1px solid #e0e0e0;
+      height: calc(100vh - 49px);
+      position: sticky;
+      top: 49px;
+      overflow-y: auto;
+      padding: 12px 0;
+      transition: transform 0.25s ease;
+    }
+
+    #sidebar.hidden {
+      transform: translateX(-100%);
+      position: fixed;
+      z-index: 150;
+      top: 49px;
+      left: 0;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+    }
+
+    #sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 140;
+    }
+
+    .toc-section { margin-bottom: 4px; }
+
+    .toc-section-title {
+      font-size: 0.7rem;
       font-weight: bold;
-    }
-
-    #status {
-      font-size: 0.8rem;
       color: #888;
+      padding: 8px 14px 4px;
+      letter-spacing: 0.05em;
     }
 
-    #controls {
+    .toc-group-title {
+      font-size: 0.82rem;
+      font-weight: bold;
+      color: #555;
+      padding: 6px 14px 2px;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
     }
+    .toc-group-title:hover { color: #333; }
+    .toc-group-title .arrow { font-size: 0.6rem; transition: transform 0.2s; }
+    .toc-group-title.collapsed .arrow { transform: rotate(-90deg); }
+    .toc-group-items.collapsed { display: none; }
 
-    #search {
-      padding: 6px 10px;
-      border: 1px solid #ddd;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      width: 160px;
-    }
-
-    #jump-btn {
-      padding: 6px 12px;
-      background: #f0c040;
-      border: none;
-      border-radius: 20px;
-      font-size: 0.85rem;
+    .toc-link {
+      display: block;
+      padding: 4px 14px 4px 22px;
+      font-size: 0.78rem;
+      color: #555;
+      text-decoration: none;
       cursor: pointer;
-      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+    .toc-link:hover { background: #fff8e0; color: #c08000; }
 
-    #jump-btn:hover { background: #e0b030; }
-
+    /* メインコンテンツ */
     main {
+      flex: 1;
       max-width: 680px;
+      width: 100%;
       margin: 0 auto;
-      padding: 24px 16px;
+      padding: 20px 16px;
     }
 
-    .tweet-wrapper {
-      margin-bottom: 8px;
+    /* 各話カード */
+    .ep-card {
+      background: #fff;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .ep-header {
       display: flex;
-      justify-content: center;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px 8px;
+      border-bottom: 1px solid #f0f0f0;
     }
 
-    .tweet-wrapper blockquote {
-      width: 100% !important;
-    }
-
-    .separator {
-      text-align: center;
-      color: #aaa;
-      font-size: 0.8rem;
-      padding: 12px 0 4px;
+    .ep-num {
+      font-size: 0.75rem;
       font-weight: bold;
+      color: #bbb;
     }
 
-    #loading {
-      text-align: center;
-      padding: 60px 20px;
-      color: #888;
+    .ep-text {
+      font-size: 0.85rem;
+      color: #444;
+      flex: 1;
+      margin: 0 10px;
     }
+
+    .ep-link {
+      font-size: 0.75rem;
+      color: #1da1f2;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .ep-link:hover { text-decoration: underline; }
+
+    /* 画像グリッド */
+    .ep-images {
+      display: grid;
+      gap: 2px;
+    }
+    .ep-images.count-1 { grid-template-columns: 1fr; }
+    .ep-images.count-2 { grid-template-columns: 1fr 1fr; }
+    .ep-images.count-3 { grid-template-columns: 1fr 1fr; }
+    .ep-images.count-3 .ep-img:first-child { grid-column: 1 / -1; }
+    .ep-images.count-4 { grid-template-columns: 1fr 1fr; }
+
+    .ep-img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 1;
+      object-fit: cover;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .ep-images.count-1 .ep-img { aspect-ratio: auto; max-height: 600px; object-fit: contain; background: #000; }
+    .ep-img:hover { opacity: 0.92; }
+
+    /* 画像ビューア */
+    #viewer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    #viewer.open { display: flex; }
+
+    #viewer img {
+      max-width: 95vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    #viewer-nav {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    #viewer-nav button {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    #viewer-nav button:hover { background: rgba(255,255,255,0.3); }
+    #viewer-nav button:disabled { opacity: 0.3; cursor: default; }
+
+    #viewer-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* ローディング・その他 */
+    .ep-no-image {
+      padding: 20px;
+      text-align: center;
+      color: #ccc;
+      font-size: 0.8rem;
+    }
+
+    #loading { text-align: center; padding: 60px 20px; color: #888; }
 
     #load-more {
       display: block;
-      margin: 24px auto;
+      margin: 20px auto;
       padding: 10px 32px;
       background: #f0c040;
       border: none;
@@ -103,61 +252,216 @@
       font-weight: bold;
       cursor: pointer;
     }
-
     #load-more:hover { background: #e0b030; }
 
     #scroll-top {
       position: fixed;
       bottom: 24px;
-      right: 24px;
+      right: 16px;
       background: #f0c040;
       border: none;
       border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      font-size: 1.2rem;
+      width: 40px;
+      height: 40px;
+      font-size: 1.1rem;
       cursor: pointer;
       display: none;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 100;
+    }
+
+    @media (max-width: 700px) {
+      #sidebar { position: fixed; transform: translateX(-100%); }
+      #sidebar:not(.hidden) { transform: translateX(0); }
     }
   </style>
 </head>
 <body>
 
 <header>
+  <button id="menu-btn" title="目次">☰</button>
   <h1>🐾 ちいかわ 漫画まとめ</h1>
-  <div id="controls">
-    <input id="search" type="text" placeholder="番号で移動 (例: 100)">
-    <button id="jump-btn">移動</button>
-  </div>
   <div id="status">読み込み中...</div>
 </header>
 
-<main id="timeline">
-  <div id="loading">漫画を読み込んでいます...</div>
-</main>
+<div class="layout">
+  <div id="sidebar-overlay"></div>
+
+  <nav id="sidebar">
+    <div class="toc-section">
+      <div class="toc-section-title">📅 年月で移動</div>
+      <div id="toc-months"></div>
+    </div>
+    <div class="toc-section">
+      <div class="toc-section-title">📖 エピソードで移動</div>
+      <div id="toc-arcs"></div>
+    </div>
+  </nav>
+
+  <main id="timeline">
+    <div id="loading">漫画を読み込んでいます...</div>
+  </main>
+</div>
+
+<!-- 画像ビューア -->
+<div id="viewer">
+  <button id="viewer-close">✕</button>
+  <img id="viewer-img" src="" alt="">
+  <div id="viewer-nav">
+    <button id="viewer-prev">◀ 前</button>
+    <span id="viewer-count" style="color:#fff;font-size:0.85rem;align-self:center"></span>
+    <button id="viewer-next">次 ▶</button>
+  </div>
+</div>
 
 <button id="scroll-top" title="先頭へ">↑</button>
 
-<script async src="https://platform.twitter.com/widgets.js"></script>
 <script>
+const MONTHS = [
+  ["2020年01月",18],["2020年02月",36],["2020年03月",50],["2020年04月",57],
+  ["2020年05月",61],["2020年06月",71],["2020年07月",86],["2020年08月",100],
+  ["2020年09月",124],["2020年10月",141],["2020年11月",164],["2020年12月",184],
+  ["2021年01月",213],["2021年02月",248],["2021年03月",277],["2021年04月",304],
+  ["2021年05月",332],["2021年06月",362],["2021年07月",388],["2021年08月",415],
+  ["2021年09月",443],["2021年10月",470],["2021年11月",501],["2021年12月",524],
+  ["2022年01月",548],["2022年02月",576],["2022年03月",596],["2022年04月",614],
+  ["2022年05月",636],["2022年06月",657],["2022年07月",683],["2022年08月",712],
+  ["2022年09月",739],["2022年10月",770],["2022年11月",801],["2022年12月",823],
+  ["2023年01月",850],["2023年02月",876],["2023年03月",899],["2023年04月",924],
+  ["2023年05月",950],["2023年06月",975],["2023年07月",1001],["2023年08月",1027],
+  ["2023年09月",1055],["2023年10月",1082],["2023年11月",1108],["2023年12月",1131],
+  ["2024年01月",1157],["2024年02月",1185],["2024年03月",1208],["2024年04月",1233],
+  ["2024年05月",1259],["2024年06月",1285],["2024年07月",1312],["2024年08月",1340],
+  ["2024年09月",1368],["2024年10月",1395],["2024年11月",1422],["2024年12月",1448],
+  ["2025年01月",1474],["2025年02月",1499],["2025年03月",1519],["2025年04月",1530],
+  ["2025年05月",1538],["2025年06月",1558],["2025年07月",1572],["2025年08月",1578],
+  ["2025年09月",1582],["2025年10月",1586],["2025年11月",1590],["2025年12月",1593],
+  ["2026年01月",1597],["2026年02月",1610],["2026年03月",1625],["2026年04月",1640],
+  ["2026年05月",1655],["2026年06月",1670],
+];
+
+const ARCS = [
+  ["うさぎ登場",1],["くりまんじゅう登場",10],["ハチワレ登場",45],
+  ["労働の鎧さん登場",60],["チャリメラ",75],["キメラ",95],
+  ["穴",130],["返せ",150],["草むしり検定",180],
+  ["流れ星",250],["検定本番",320],["完売",370],
+  ["三ツ星",400],["カメラ",430],["擬態型",460],
+  ["手紙",490],["すき焼きキャンペーン",520],["ラッコ登場",550],
+  ["再検定",590],["無限白米湧きドコロ",630],["ドライブ",660],
+  ["おっきい討伐",700],["ほんとにこわい話",730],["むちゃうマン",760],
+  ["パジャマパーティーズ",800],["ほめられリボン",830],["シーサー登場",860],
+  ["夜の出来事",890],["監獄ゴブリン",920],["スロット",950],
+  ["黒い流れ星",980],["寄生",1010],["飢饉",1040],
+  ["たこ着",1070],["呪いの旅館",1100],["下剋上",1140],
+  ["山んば",1180],["鬼",1230],["家？",1280],
+  ["てぃは",1320],["特訓",1360],["でかつよとあのこ",1400],
+  ["一緒に討伐",1440],["カニ",1480],["あくむ",1510],
+  ["島合宿",1540],["禁酒",1560],["パラレルワールド",1575],
+  ["出汁",1580],["新曲",1585],["お宝",1588],
+  ["福の神",1592],["家郎",1595],["強くなってる",1598],
+  ["ボンボン",1610],["天使",1620],["模試",1640],
+  ["驕り",1660],["再再検定",1680],["5級",1700],
+  ["レンタサイクル",1720],["毛量",1740],["心霊",1760],
+];
+
 const BATCH = 20;
 let allTweets = [];
 let rendered = 0;
-let lastMonth = "";
+
+// 画像ビューア
+let viewerImages = [];
+let viewerIndex = 0;
+
+function openViewer(images, index) {
+  viewerImages = images;
+  viewerIndex = index;
+  updateViewer();
+  document.getElementById("viewer").classList.add("open");
+}
+
+function updateViewer() {
+  document.getElementById("viewer-img").src = viewerImages[viewerIndex];
+  document.getElementById("viewer-count").textContent = `${viewerIndex + 1} / ${viewerImages.length}`;
+  document.getElementById("viewer-prev").disabled = viewerIndex === 0;
+  document.getElementById("viewer-next").disabled = viewerIndex === viewerImages.length - 1;
+}
+
+document.getElementById("viewer-close").onclick = () => document.getElementById("viewer").classList.remove("open");
+document.getElementById("viewer-prev").onclick = () => { viewerIndex--; updateViewer(); };
+document.getElementById("viewer-next").onclick = () => { viewerIndex++; updateViewer(); };
+document.getElementById("viewer").onclick = (e) => {
+  if (e.target === document.getElementById("viewer")) document.getElementById("viewer").classList.remove("open");
+};
+
+document.addEventListener("keydown", (e) => {
+  const viewer = document.getElementById("viewer");
+  if (!viewer.classList.contains("open")) return;
+  if (e.key === "ArrowLeft" && viewerIndex > 0) { viewerIndex--; updateViewer(); }
+  if (e.key === "ArrowRight" && viewerIndex < viewerImages.length - 1) { viewerIndex++; updateViewer(); }
+  if (e.key === "Escape") viewer.classList.remove("open");
+});
 
 async function loadTweets() {
   const resp = await fetch("data/tweets.json");
   allTweets = await resp.json();
   document.getElementById("loading").remove();
   document.getElementById("status").textContent = `全 ${allTweets.length} 話`;
+  buildTOC();
   renderBatch();
 }
 
-function monthLabel(index) {
-  // Tweet IDs are snowflake IDs — approximate date from ID
-  // Use index as episode number instead
-  return null;
+function buildTOC() {
+  const monthsEl = document.getElementById("toc-months");
+  const byYear = {};
+  for (const [label, idx] of MONTHS) {
+    const year = label.slice(0, 4) + "年";
+    if (!byYear[year]) byYear[year] = [];
+    byYear[year].push([label.slice(5), idx]);
+  }
+  for (const [year, months] of Object.entries(byYear)) {
+    const group = document.createElement("div");
+    const title = document.createElement("div");
+    title.className = "toc-group-title";
+    title.innerHTML = `${year} <span class="arrow">▾</span>`;
+    const items = document.createElement("div");
+    items.className = "toc-group-items";
+    for (const [month, idx] of months) {
+      if (idx > allTweets.length) continue;
+      const a = document.createElement("a");
+      a.className = "toc-link";
+      a.textContent = month;
+      a.onclick = () => jumpTo(idx);
+      items.appendChild(a);
+    }
+    title.onclick = () => {
+      title.classList.toggle("collapsed");
+      items.classList.toggle("collapsed");
+    };
+    group.appendChild(title);
+    group.appendChild(items);
+    monthsEl.appendChild(group);
+  }
+
+  const arcsEl = document.getElementById("toc-arcs");
+  for (const [name, idx] of ARCS) {
+    if (idx > allTweets.length) continue;
+    const a = document.createElement("a");
+    a.className = "toc-link";
+    a.textContent = name;
+    a.onclick = () => jumpTo(idx);
+    arcsEl.appendChild(a);
+  }
+}
+
+function jumpTo(n) {
+  while (rendered < n && rendered < allTweets.length) {
+    document.getElementById("load-more")?.remove();
+    renderBatch();
+  }
+  if (window.innerWidth <= 700) toggleSidebar(false);
+  setTimeout(() => {
+    document.getElementById(`ep-${n}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 100);
 }
 
 function renderBatch() {
@@ -167,69 +471,87 @@ function renderBatch() {
   for (let i = rendered; i < end; i++) {
     const tweet = allTweets[i];
     const num = i + 1;
+    const images = tweet.images || [];
 
-    const sep = document.createElement("div");
-    sep.className = "separator";
-    sep.textContent = `# ${num}`;
-    sep.id = `ep-${num}`;
-    timeline.appendChild(sep);
+    const card = document.createElement("div");
+    card.className = "ep-card";
+    card.id = `ep-${num}`;
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "tweet-wrapper";
+    // ヘッダー
+    const header = document.createElement("div");
+    header.className = "ep-header";
+    const numEl = document.createElement("span");
+    numEl.className = "ep-num";
+    numEl.textContent = `# ${num}`;
+    const textEl = document.createElement("span");
+    textEl.className = "ep-text";
+    textEl.textContent = tweet.text || "";
+    const link = document.createElement("a");
+    link.className = "ep-link";
+    link.href = tweet.url;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "Xで見る →";
+    header.appendChild(numEl);
+    header.appendChild(textEl);
+    header.appendChild(link);
+    card.appendChild(header);
 
-    const bq = document.createElement("blockquote");
-    bq.className = "twitter-tweet";
-    bq.setAttribute("data-dnt", "true");
-    bq.setAttribute("data-theme", "light");
-    const a = document.createElement("a");
-    a.href = tweet.url;
-    bq.appendChild(a);
-    wrapper.appendChild(bq);
-    timeline.appendChild(wrapper);
+    // 画像
+    if (images.length > 0) {
+      const grid = document.createElement("div");
+      grid.className = `ep-images count-${Math.min(images.length, 4)}`;
+      images.slice(0, 4).forEach((src, idx) => {
+        const img = document.createElement("img");
+        img.className = "ep-img";
+        img.src = src;
+        img.alt = `${num}話 画像${idx + 1}`;
+        img.loading = "lazy";
+        img.onclick = () => openViewer(images, idx);
+        grid.appendChild(img);
+      });
+      card.appendChild(grid);
+    } else {
+      const noImg = document.createElement("div");
+      noImg.className = "ep-no-image";
+      noImg.textContent = "画像を取得中...";
+      card.appendChild(noImg);
+    }
+
+    timeline.appendChild(card);
   }
 
   rendered = end;
 
-  // Re-render new embeds
-  if (window.twttr && window.twttr.widgets) {
-    window.twttr.widgets.load(timeline);
-  }
-
-  // Show/hide load more button
   let btn = document.getElementById("load-more");
   if (rendered < allTweets.length) {
     if (!btn) {
       btn = document.createElement("button");
       btn.id = "load-more";
-      btn.textContent = `もっと読む (残り ${allTweets.length - rendered} 話)`;
-      btn.onclick = () => {
-        btn.remove();
-        renderBatch();
-      };
-    } else {
-      btn.textContent = `もっと読む (残り ${allTweets.length - rendered} 話)`;
+      btn.onclick = () => { btn.remove(); renderBatch(); };
+      timeline.appendChild(btn);
     }
-    timeline.appendChild(btn);
+    btn.textContent = `もっと読む（残り ${allTweets.length - rendered} 話）`;
+  } else {
+    btn?.remove();
   }
 }
 
-document.getElementById("jump-btn").onclick = () => {
-  const n = parseInt(document.getElementById("search").value);
-  if (!isNaN(n) && n >= 1 && n <= allTweets.length) {
-    // Make sure the episode is rendered
-    while (rendered < n) {
-      document.getElementById("load-more")?.remove();
-      renderBatch();
-    }
-    setTimeout(() => {
-      document.getElementById(`ep-${n}`)?.scrollIntoView({ behavior: "smooth" });
-    }, 300);
-  }
-};
+function toggleSidebar(force) {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
+  const isHidden = sidebar.classList.contains("hidden");
+  const open = force !== undefined ? force : isHidden;
+  sidebar.classList.toggle("hidden", !open);
+  overlay.style.display = open ? "block" : "none";
+}
 
-document.getElementById("search").addEventListener("keydown", e => {
-  if (e.key === "Enter") document.getElementById("jump-btn").click();
-});
+document.getElementById("menu-btn").onclick = () => toggleSidebar();
+document.getElementById("sidebar-overlay").onclick = () => toggleSidebar(false);
+
+if (window.innerWidth <= 700) {
+  document.getElementById("sidebar").classList.add("hidden");
+}
 
 const scrollTopBtn = document.getElementById("scroll-top");
 window.addEventListener("scroll", () => {
