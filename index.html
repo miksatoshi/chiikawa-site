@@ -429,6 +429,7 @@ function buildTOC() {
       if (idx > allTweets.length) continue;
       const a = document.createElement("a");
       a.className = "toc-link";
+      a.href = "javascript:void(0)";
       a.textContent = month;
       a.onclick = () => jumpTo(idx);
       items.appendChild(a);
@@ -447,6 +448,7 @@ function buildTOC() {
     if (idx > allTweets.length) continue;
     const a = document.createElement("a");
     a.className = "toc-link";
+    a.href = "javascript:void(0)";
     a.textContent = name;
     a.onclick = () => jumpTo(idx);
     arcsEl.appendChild(a);
